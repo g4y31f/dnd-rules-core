@@ -31,6 +31,7 @@ export default function Post({ post, backlinks }: Props) {
         <h1>Loading…</h1>
       ) : (
         <Layout>
+          {/* TODO: change SEO configurations*/}
           <NextSeo
             title={post.title}
             description={description}
