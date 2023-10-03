@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
 import Author from '../../interfaces/author';
 import Backlinks from '../misc/backlinks';
 import PostBody from './post-body';
 import PostMeta from './post-meta';
+import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 
 type Props = {
   title: string;
@@ -18,15 +21,48 @@ type Props = {
 };
 
 function PostSingle({ title, date, author, content, backlinks }: Props) {
+  const {
+    query: { slug },
+  } = useRouter();
+  const [crumbs, setCrumbs] = useState<{ label: string; path: string }[]>([]);
+
+  useEffect(() => {
+    console.log(slug);
+    if (!(slug instanceof Array) || slug[0] === 'home') return;
+
+    const newCrumbs = slug.map((crumb, i) => {
+      const isLastItem = i === slug.length - 1;
+      if (!isLastItem) {
+        return {
+          label: crumb,
+          path: '/' + slug.slice(0, i + 1).join('/'),
+        };
+      } else {
+        return {
+          label: crumb,
+          path: '/' + slug.slice(0, i + 1).join('/'),
+        };
+      }
+    });
+
+    newCrumbs.unshift({
+      label: 'Home',
+      path: '/',
+    });
+
+    setCrumbs(newCrumbs);
+  }, [slug]);
+
   return (
     <section>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="pt-32 pb-12 md:pt-40 md:pb-20">
           <div className="max-w-3xl mx-auto lg:max-w-none">
             <article>
-              {/* Article header */}
               <header className="max-w-3xl mx-auto mb-20">
-                {/* Title */}
+                <nav>
+                  <Breadcrumbs items={crumbs} />
+                </nav>
                 <h1 className="h1 text-center mb-4 text-6xl">{title}</h1>
               </header>
 
