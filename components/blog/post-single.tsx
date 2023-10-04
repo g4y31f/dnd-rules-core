@@ -27,22 +27,13 @@ function PostSingle({ title, date, author, content, backlinks }: Props) {
   const [crumbs, setCrumbs] = useState<{ label: string; path: string }[]>([]);
 
   useEffect(() => {
-    console.log(slug);
     if (!(slug instanceof Array) || slug[0] === 'home') return;
 
     const newCrumbs = slug.map((crumb, i) => {
-      const isLastItem = i === slug.length - 1;
-      if (!isLastItem) {
-        return {
-          label: crumb,
-          path: '/' + slug.slice(0, i + 1).join('/'),
-        };
-      } else {
-        return {
-          label: crumb,
-          path: '/' + slug.slice(0, i + 1).join('/'),
-        };
-      }
+      return {
+        label: crumb,
+        path: '/' + slug.slice(0, i + 1).join('/'),
+      };
     });
 
     newCrumbs.unshift({

@@ -17,14 +17,25 @@ type Props = {
   post: PostType;
   slug: string;
   backlinks: { [k: string]: Items };
+  links: string[];
 };
 
-export default function Post({ post, backlinks }: Props) {
+export default function Post({ post, backlinks, links }: Props) {
   const router = useRouter();
   const description = post.excerpt.slice(0, 155);
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
   }
+  console.log(post.content);
+  if (router.query.slug[0] === 'home') {
+    const levelOneLink = links.map((link) => link.split('/')[0]);
+    const uniqueLinks = [...new Set(levelOneLink)].map((link) => {
+      return `<a href="/${link}">${link}</a>`;
+    });
+
+    post.content = uniqueLinks.join('\n');
+  }
+
   return (
     <>
       {router.isFallback ? (
@@ -102,6 +113,7 @@ export async function getStaticProps({ params }: Params) {
         ...post,
         content,
       },
+      links: Object.keys(linkMapping),
       backlinks: backlinkNodes,
     },
   };
