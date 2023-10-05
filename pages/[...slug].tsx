@@ -8,6 +8,9 @@ import PostSingle from '../components/blog/post-single';
 import Layout from '../components/misc/layout';
 import { NextSeo } from 'next-seo';
 
+import { Tree } from '../components/Tree';
+import { buildTree } from '../lib/utils/tree';
+
 type Items = {
   title: string;
   excerpt: string;
@@ -26,14 +29,11 @@ export default function Post({ post, backlinks, links }: Props) {
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
   }
-  console.log(post.content);
   if (router.query.slug[0] === 'home') {
-    const levelOneLink = links.map((link) => link.split('/')[0]);
-    const uniqueLinks = [...new Set(levelOneLink)].map((link) => {
-      return `<a href="/${link}">${link}</a>`;
-    });
+    // make a tree out of links
+    const tree = buildTree(links);
 
-    post.content = uniqueLinks.join('\n');
+    post.content = <Tree tree={tree} />;
   }
 
   return (

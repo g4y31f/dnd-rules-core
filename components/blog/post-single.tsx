@@ -9,7 +9,7 @@ import Breadcrumbs from '../Breadcrumbs/Breadcrumbs';
 
 type Props = {
   title: string;
-  content: string;
+  content: string | React.ReactNode;
   date?: string;
   author?: Author;
   backlinks: {

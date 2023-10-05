@@ -19,7 +19,6 @@ import { fromHtml } from 'hast-util-from-html';
 
 export async function markdownToHtml(markdown: string, currSlug: string) {
   markdown = updateMarkdownLinks(markdown, currSlug);
-  console.log(markdown);
   // get mapping of current links
   const links = getLinksMapping()[currSlug] as string[];
   const linkNodeMapping = new Map<string, Element>();
