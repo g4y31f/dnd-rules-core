@@ -11,9 +11,11 @@ export const Tree = ({ tree }: TreeProps) => {
     if (typeof node === 'string') {
       // If the node is a string, render it as a link
       return (
-        <a key={key} href={node}>
-          {key}
-        </a>
+        <span className="internal-link-container" key={key}>
+          <a href={node} className="internal-link">
+            {key}
+          </a>
+        </span>
       );
     } else {
       // If the node is an object, render it as a nested tree
@@ -31,4 +33,4 @@ export const Tree = ({ tree }: TreeProps) => {
       {Object.entries(tree).map(([key, node]) => renderNode(node, key))}
     </div>
   );
-}
+};
