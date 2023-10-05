@@ -7,7 +7,8 @@
     "prebuild": "npm run copyimages",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "obsidian-export": "obsidian-export DnD-ukrainian/publish common_md"
   },
   "dependencies": {
     "classnames": "^2.3.1",
