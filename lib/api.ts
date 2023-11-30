@@ -1,13 +1,18 @@
 import fs from 'fs';
-import path from 'path';
+import path, { relative } from 'path';
 import matter from 'gray-matter';
 import { getFilesRecursively } from './modules/find-files-recusively.mjs';
 import { getMDExcerpt } from './markdownToHtml';
+import { ca } from 'date-fns/locale';
 
 const mdDir = path.join(process.cwd(), process.env.COMMON_MD_DIR);
 
 export function getPostBySlug(slug: string, fields: string[] = []) {
-  const realSlug = slug.replace(/\.md(?:#[^\)]*)?$/, '');
+  let realSlug = slug.replace(/\.md(?:#[^\)]*)?$/, '');
+  const slugDir = realSlug.split(path.sep);
+  const slugFile = slugDir[slugDir.length - 1];
+  const filenameSameAsDir = slugFile === slugDir?.[slugDir.length - 2];
+
   const fullPath = path.join(mdDir, `${realSlug}.md`);
   const data = parseFileToObj(fullPath);
 
@@ -20,7 +25,11 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
   // Ensure only the minimal needed data is exposed
   fields.forEach((field) => {
     if (field === 'slug') {
-      items[field] = realSlug;
+      if (filenameSameAsDir) {
+        items[field] = slugDir.slice(0, -1).join(path.sep);
+      } else {
+        items[field] = realSlug;
+      }
     }
 
     if (typeof data[field] !== 'undefined') {
@@ -31,7 +40,19 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
 }
 
 function parseFileToObj(pathToObj: string) {
-  const fileContents = fs.readFileSync(pathToObj, 'utf8');
+  let fileContents;
+  // todo: kinda hacky way to check if path is a directory and if so, get the index.md file
+  try {
+    fs.lstatSync(pathToObj);
+  } catch (error) {
+    pathToObj = pathToObj.replace(/\.md$/, '');
+  }
+  if (fs.lstatSync(pathToObj).isDirectory()) {
+    const indexFile = path.join(pathToObj, pathToObj.split(path.sep).pop());
+    fileContents = fs.readFileSync(indexFile + '.md', 'utf8');
+  } else {
+    fileContents = fs.readFileSync(pathToObj, 'utf8');
+  }
   const { data, content } = matter(fileContents);
 
   data['content'] = content;
